@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log into barbershop</title>
+</head>
+<style>
+
+    .main{
+        width: 100%;
+        max-height: 100%;
+        margin: 0;
+
+        background-color: chocolate;
+    }
+    .wrapper{
+        display: flex;
+        position: absolute;
+        width:30%;
+        min-height: 440px;
+        align-items: center;
+        top:  50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+
+        justify-content: center;
+        overflow: hidden;
+    }
+    .form-box{
+        width: 100%;
+        padding: 40px;
+    }
+    .text3{
+        text-align: center;
+        font-family: Candara;
+        color: #eeeeee;
+        font-size: 24px;
+        margin-bottom: 0;
+    }
+    .text2{
+        text-align: center;
+        font-family: Candara;
+        color: #eeeeee;
+        font-size: 29px;
+        margin-top:0;
+    }
+    .input-box {
+        width: 100%;
+        height: 50px;
+        border-bottom: 2px solid #ffffff;
+        margin: 30px 0;
+    }
+    .input-box label {
+        position: absolute;
+        top: 58%;
+        left: -15px;
+        transform: translateY(-1%);
+        font-size: 1em;
+        color: #ffffff;
+        font-weight: 500;
+    }
+    .input-box input {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 1em;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 0 35px 0 5px;
+    }
+    .input-box .icon {
+        position: absolute;
+        left: 10px;
+        font-size: 1.7em;
+        color: #ffffff;
+        line-height: 57px;
+    }
+    .remember-forgot {
+        font-size: .9em;
+        color: #ffffff;
+        font-weight: 500;
+        display: flex;
+        margin-left: 35%;
+        margin-top: 10px;
+        margin-bottom: 18px;
+        justify-content: space-between;
+    }
+    .remember-forgot label input {
+        accent-color: #ffffff;
+        margin-right: 3px;
+    }
+    .remember-forgot a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+    .remember-forgot a:hover {
+        text-decoration: underline;
+    }
+    #btn_log_2 {
+        width: 140px;
+        height: 45px;
+        border: none;
+        outline: none;
+        border-radius: 6px;
+        cursor:pointer;
+        font-size: 18px;
+        color: #030303;
+        font-weight: 500;
+        position: absolute;
+        margin-left: 29%;
+
+    }
+</style>
+<body class="main">
+    <div class="main" >
+        <div class="wrapper">
+
+            <div class="form-box login">
+                <div th:if="${param.error}" >
+                    <h3 class="text3">Вы ввели неправильный пароль</h3>
+                </div>
+                <h2 class="text2">Войти</h2>
+                <form th:action="@{/login_page}" method="post" >
+                    <div class="input-box">
+                        <span class="icon"><ion-icon name="person-circle-outline"></ion-icon></span>
+                        <input type="text" id="username" name="username" required/>
+                    </div>
+                    <div class="input-box">
+                        <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+                        <input type="password" id="password" name="password" required/>
+                    </div>
+                    <div class="remember-forgot">
+                        <label><input type="checkbox">Запомнить меня</label>
+                    </div>
+                    <button id="btn_log_2" type="submit" class="btn-light">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        const url = window.location.href;
+        if (url.endsWith("?")) {
+            var message = "You have been logged out";
+            document.getElementById("output").innerHTML = message;
+        }
+    </script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script noModule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

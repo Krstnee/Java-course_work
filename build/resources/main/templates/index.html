@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="en"> <!--Шаблонизатор th: - берет данные из backend -->
+<head>
+    <meta charset="UTF-8">
+    <meta href="login.html">
+    <title>Barbershop management system</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<style>
+    .nav {
+        width: 320px;
+        min-width: 320px;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        margin: 0;
+        left: -320px;
+        padding: 15px 20px;
+        -webkit-transition: left 0.3s;
+        -moz-transition: left 0.3s;
+        transition: left 0.3s;
+        background: chocolate;
+        z-index: 2000;
+    }
+    .nav-toggle {
+        position: absolute;
+        left: 320px;
+        top: 1em;
+        padding: 0.5em;
+        background: inherit;
+        color: #dadada;
+        cursor: pointer;
+        font-size: 1.2em;
+        line-height: 1;
+        z-index: 2001;
+        -webkit-transition: color .25s ease-in-out;
+        -moz-transition: color .25s ease-in-out;
+        transition: color .25s ease-in-out;
+    }
+    .nav-toggle:after {
+        content: '\2630';
+        text-decoration: none;
+    }
+    .nav-toggle:hover {
+        color: #f4f4f4;
+    }
+    [id='nav-toggle'] {
+        position: absolute;
+        display: none;
+    }
+    [id='nav-toggle']:checked ~ .nav > .nav-toggle {
+        left: auto;
+        right: 2px;
+        top: 1em;
+    }
+    [id='nav-toggle']:checked ~ .nav {
+        left: 0;
+        box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+        -moz-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+        -webkit-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+        overflow-y: auto;
+    }
+    [id='nav-toggle']:checked ~ main > article {
+        -webkit-transform: translateX(320px);
+        -moz-transform: translateX(320px);
+        transform: translateX(320px);
+    }
+    [id='nav-toggle']:checked ~ .nav > .nav-toggle:after {
+        content: '\2715';
+    }
+    body {
+        -webkit-animation: bugfix infinite 1s;
+    }
+
+    @-webkit-keyframes bugfix {
+        to {
+            padding: 0;
+        }
+    }
+
+    @media screen and (min-width: 320px) {
+        html,
+        body {
+            margin: 0;
+            overflow-x: hidden;
+        }
+    }
+
+    @media screen and (max-width: 320px) {
+        html,
+        body {
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .nav {
+            width: 100%;
+            box-shadow: none
+        }
+    }
+
+    .nav h2 {
+        width: 90%;
+        padding: 0;
+        margin: 10px 0;
+        text-align: center;
+        text-shadow: rgba(255, 255, 255, .1) -1px -1px 1px, rgba(0, 0, 0, .5) 1px 1px 1px;
+        font-size: 1.3em;
+        line-height: 1.3em;
+        opacity: 0;
+        transform: scale(0.1, 0.1);
+        -ms-transform: scale(0.1, 0.1);
+        -moz-transform: scale(0.1, 0.1);
+        -webkit-transform: scale(0.1, 0.1);
+        transform-origin: 0% 0%;
+        -ms-transform-origin: 0% 0%;
+        -moz-transform-origin: 0% 0%;
+        -webkit-transform-origin: 0% 0%;
+        transition: opacity 0.8s, transform 0.8s;
+        -ms-transition: opacity 0.8s, -ms-transform 0.8s;
+        -moz-transition: opacity 0.8s, -moz-transform 0.8s;
+        -webkit-transition: opacity 0.8s, -webkit-transform 0.8s;
+    }
+
+    .nav h2 a {
+        color: #dadada;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+
+
+    [id='nav-toggle']:checked ~ .nav h2 {
+        opacity: 1;
+        transform: scale(1, 1);
+        -ms-transform: scale(1, 1);
+        -moz-transform: scale(1, 1);
+        -webkit-transform: scale(1, 1);
+    }
+    .nav > ul {
+        display: block;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .nav > ul > li {
+        line-height: 2.5;
+        opacity: 0;
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+        -webkit-transition: opacity .5s .1s, -webkit-transform .5s .1s;
+        -moz-transition: opacity .5s .1s, -moz-transform .5s .1s;
+        -ms-transition: opacity .5s .1s, -ms-transform .5s .1s;
+        transition: opacity .5s .1s, transform .5s .1s;
+    }
+
+    [id='nav-toggle']:checked ~ .nav > ul > li {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+        -ms-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+
+  .nav > ul > li:nth-child(2) {
+        -webkit-transition: opacity .5s .2s, -webkit-transform .5s .2s;
+        transition: opacity .5s .2s, transform .5s .2s;
+    }
+
+    .nav > ul > li:nth-child(3) {
+        -webkit-transition: opacity .5s .3s, -webkit-transform .5s .3s;
+        transition: opacity .5s .3s, transform .5s .3s;
+    }
+
+    .nav > ul > li:nth-child(4) {
+        -webkit-transition: opacity .5s .4s, -webkit-transform .5s .4s;
+        transition: opacity .5s .4s, transform .5s .4s;
+    }
+
+    .nav > ul > li:nth-child(5) {
+        -webkit-transition: opacity .5s .5s, -webkit-transform .5s .5s;
+        transition: opacity .5s .5s, transform .5s .5s;
+    }
+
+    .nav > ul > li:nth-child(6) {
+        -webkit-transition: opacity .5s .6s, -webkit-transform .5s .6s;
+        transition: opacity .5s .6s, transform .5s .6s;
+    }
+
+    .nav > ul > li:nth-child(7) {
+        -webkit-transition: opacity .5s .7s, -webkit-transform .5s .7s;
+        transition: opacity .5s .7s, transform .5s .7s;
+    }
+
+
+    /**
+     * оформление ссылок пунктов меню
+     */
+
+    .nav > ul > li > a {
+        display: inline-block;
+        position: relative;
+        padding: 0;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 300;
+        font-size: 1.2em;
+        color: #dadada;
+        width: 100%;
+        text-decoration: none;
+        -webkit-transition: color .5s ease, padding .5s ease;
+        -moz-transition: color .5s ease, padding .5s ease;
+        transition: color .5s ease, padding .5s ease;
+    }
+
+    .nav > ul > li > a:hover,
+    .nav > ul > li > a:focus {
+        color: white;
+        padding-left: 15px;
+    }
+
+    .nav > ul > li > a:before {
+        content: '';
+        display: block;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        width: 100%;
+        -webkit-transition: width 0s ease;
+        transition: width 0s ease;
+    }
+
+    .nav > ul > li > a:after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 1px;
+        width: 100%;
+        background: #3bc1a0;
+        -webkit-transition: width .5s ease;
+        transition: width .5s ease;
+    }
+
+    .nav > ul > li > a:hover:before {
+        width: 0%;
+        background: #3bc1a0;
+        -webkit-transition: width .5s ease;
+        transition: width .5s ease;
+    }
+
+    .nav > ul > li > a:hover:after {
+        width: 0%;
+        background: transparent;
+        -webkit-transition: width 0s ease;
+        transition: width 0s ease;
+    }
+    body {
+        width: 100%;
+        max-height: 100%;
+        margin: 0;
+        font-family: Candara;
+        background-color: #f4f4f4;
+
+    }
+    .sign_out{
+        font-size: 1.3em;
+        line-height: 1.3em;
+        border: none;
+        background-color: chocolate;
+    }
+    #intro_btn2 {
+        padding-top: 20px;
+        height: 60px;
+        margin-bottom: 30px;
+        background-color: chocolate;
+        border: none;
+        padding: 5px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        align-content: center;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 25px;
+        color: #dadada;
+    }
+
+    table {
+
+        overflow-y:scroll;
+        height:300px;
+        width: 60%;
+        display: block;
+        text-align: center;
+        align-content: center;
+        margin-left: 320px
+    }
+    tbody {
+        height: 100px;
+        overflow: auto;
+        text-align: center;
+        align-content: center;
+    }
+    .tg {
+
+        border-color: #00ffff;
+        border-spacing:0;
+        margin:auto;
+    }
+    .tg td {
+        background-color: chocolate;
+        border-color: #0e0d0d;
+        border-style:solid;
+        border-width:1px;
+        color: #000000;
+        font-family: sans-serif;
+        font-size:18px;
+        overflow: hidden;
+        font-weight: bold;
+        padding:10px 5px;
+        word-break:normal;
+        align-content: center;
+        text-align: center
+    }
+    .tg th {
+        background-color: #dadada;
+        border-color: #030303;
+        border-style:solid;
+        border-width:1px;
+        color: black;
+        font-family: sans-serif;
+        font-size:16px;
+        font-weight:normal;
+        padding: 10px 5px;
+        word-break:normal
+    }
+    .tg .t_header {
+        text-align:center;
+        vertical-align:center
+    }
+
+    #container_hist {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 100px;
+        margin-top: 20px
+    }
+    .chart {
+        padding: 2rem;
+        border: 1px solid #a6a4a4;
+        border-radius: 1rem;
+        background: #a6a4a4;
+        box-shadow: #dadada;
+    }
+    #counter {
+        position: relative;
+        padding: 5px;
+        width: 300px;
+        border-radius: 10px;
+        opacity: 0.8;
+        display: inline-block;
+    }
+    #average {
+        position: relative;
+        padding: 5px;
+        width: 400px;
+        border-radius: 10px;
+        display: inline-block;
+        opacity: 0.8
+    }
+
+    .header-bar{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background-color: chocolate;
+        backdrop-filter: blur(20px);
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        align-items: center;
+        z-index: 50;
+    }
+    .header-text {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0 auto;
+        color: #fff;
+    }
+    .header-frame {
+        position: absolute;
+        display: flex;
+        width: 30%;
+        justify-content: center; /* center horizontally */
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        align-items: center;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 5px 10px;
+        background-color: #a6a4a4;
+        border-radius: 3px;
+        border: 1px solid white;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    }
+    .icon_user {
+        position: absolute;
+        top: 3%;
+        right: 43%;
+        font-size: 1.6em;
+        color: #ffffff;
+    }
+    #user {
+        position: absolute;
+        top: 20%;
+        right: 13%;
+        width: 130px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: #ffffff;
+        font-weight: 500;
+        border-bottom: thick solid #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    #role {
+        position: absolute;
+        top: 20%;
+        right: 1.5%;
+        width: 130px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: #ffffff;
+        font-weight: 500;
+        border-bottom: thick solid #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        text-align: left;
+        margin: 0;
+        padding: 0;
+    }
+    .sign_out{
+        font-size: 1.3em;
+        line-height: 1.3em;
+        border: none;
+        background-color: chocolate;
+    }
+    .icon_role {
+        position: absolute;
+        top: 3%;
+        right: 37%;
+        font-size: 1.6em;
+        color: #ffffff;
+        margin-right: 5px;
+    }
+    #user span {
+        width: 100%;
+        text-align: center;
+        font-weight: bold
+    }
+    #role span {
+        width: 100%;
+        text-align: center;
+        font-weight: bold
+    }
+
+</style>
+<body>
+<input type="checkbox" id="nav-toggle" hidden>
+
+<nav class="nav">
+
+    <label for="nav-toggle" class="nav-toggle" onclick></label>
+
+    <h2 class="logo">
+        <a href="./index.html">СУЦП</a>
+    </h2>
+    <ul>
+        <li><a href="/">Главная</a>
+        <li><a href="/about_us">О нас</a>
+        <li><a href="/result">Товары</a>
+        <li><a href="/login_page"><form th:action="@{/logout}" method="post">
+        <button class="sign_out"><b style="color: #dadada; font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 20px;" >Выйти</b></button>
+    </form></a>
+        <li><a th:href="@{/auth/register}"><button class="sign_out"><b style="color: #dadada; font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 20px;">Регистрация</b></button></a>
+        <th:block th:if="${#authorization.expression('hasRole(''ROLE_DILER'')')}">
+            <a th:href="@{/new}"><button type="button" class="sign_out" data-toggle="button" aria-pressed="false"><b style="color: #dadada; font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 20px;">Новая поставка</b></button></a>
+        </th:block>
+        <th:block th:if="${#authorization.expression('hasRole(''ROLE_DILER'')')}">
+            <a th:href="@{/new}"><button type="button" class="sign_out" data-toggle="button" aria-pressed="false"><b style="color: #dadada; font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 20px;">Новый товар</b></button></a>
+        </th:block>
+
+    </ul>
+</nav>
+
+<div class="bg-image" style="height: 1000px">
+    <div class="header-bar">
+
+        <div class="header-frame">
+            <h2 class="header-text" >Главная</h2>
+        </div>
+
+        <div id="user">
+            <span class="icon_user"><ion-icon name="person-circle-outline"></ion-icon></span>
+            <span sec:authentication="name"></span>
+        </div>
+
+        <div id="role">
+            <span class="icon_role"><ion-icon name="reader-outline"></ion-icon></span>
+            <th:block th:with="roleName=${#authentication.getPrincipal().getAuthorities()[0].getAuthority().substring(5)}">
+                <span th:text="${roleName}"></span>
+            </th:block>
+        </div>
+    </div>
+
+
+    <div class="row" style="margin-left: -285px; margin-top: 100px">
+        <div class="col-md-8 offset-md-4">
+            <form th:action="@{/}" style="margin-bottom: 2px">
+                <input style="margin-bottom: 20px" type="text" name="keyword" id="keyword" placeholder="Введите название здесь" size="70" th:value="${keyword}" required/><label for="keyword"><i class="fas fa-search"></i></label>
+                <input style="cursor: pointer; padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    border-radius: 0.2rem;    color: #000;
+    background-color: chocolate;
+    border-color: chocolate;" type="submit" value="Искать"/>
+                <input style="cursor: pointer; padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    border-radius: 0.2rem;    color: #000;
+    background-color: chocolate;
+    border-color: chocolate;" type="button" value="Очистить" id="btnClear" onclick="clearSearch()"/>
+            </form>
+        </div>
+    </div>
+
+    <table id="table_cl" class="tg">
+        <thead>
+        <tr>
+            <td class="t_header">ID поставки</td>
+            <td class="t_header">Название поставки</td>
+            <td class="t_header">Дата открытия</td>
+            <td class="t_header">Товар</td>
+            <td class="t_header">Имя клиента</td>
+            <th:block th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                <td class="t_header">Действия</td>
+            </th:block>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client: ${listClients}"> <!-- for car in listClients. Обращаемся по именованному индексу-->
+            <th scope="row" class="" th:text="${client.id}">-</th>
+            <th scope="row" class="" th:text="${client.full_name}">-</th>
+            <th scope="row" class="" th:text="${client.visit_date}">-</th>
+            <th scope="row" class="" th:text="${client.service}">-</th>
+            <th scope="row" class="" th:text="${client.master_name}">-</th>
+            <th:block th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                <td>
+                    <a th:href="@{'/edit/' + ${client.id}}"><button type="button" style="color: #000;display: inline-block;
+    font-weight: 400;
+    width: 150px;
+    line-height: 1.5;text-align: center;
+    text-decoration: none;
+    vertical-align: middle;padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}background-color: #dadada;
+    border-color: #dadada;">Редактировать</button></a>
+                    <a th:href="@{'/delete/' + ${client.id}}"><button type="button" style="color: #000;display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;text-align: center;
+    width: 150px;
+    text-decoration: none;
+    vertical-align: middle;padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}background-color: #dadada;
+    border-color: #dadada;">Удалить</button></a>
+                </td>
+            </th:block>
+        </tr>
+        </tbody>
+    </table>
+    <script charset="utf-8">var TGSort=window.TGSort||function(n){"use strict";function r(n){return n?n.length:0}function t(n,t,e,o=0){for(e=r(n);o<e;++o)t(n[o],o)}function e(n){return n.split("").reverse().join("")}function o(n){var e=n[0];return t(n,function(n){for(;!n.startsWith(e);)e=e.substring(0,r(e)-1)}),r(e)}function u(n,r,e=[]){return t(n,function(n){r(n)&&e.push(n)}),e}var a=parseFloat;function i(n,r){return function(t){var e="";return t.replace(n,function(n,t,o){return e=t.replace(r,"")+"."+(o||"").substring(1)}),a(e)}}var s=i(/^(?:\s*)([+-]?(?:\d+)(?:,\d{3})*)(\.\d*)?$/g,/,/g),c=i(/^(?:\s*)([+-]?(?:\d+)(?:\.\d{3})*)(,\d*)?$/g,/\./g);function f(n){var t=a(n);return!isNaN(t)&&r(""+t)+1>=r(n)?t:NaN}function d(n){var e=[],o=n;return t([f,s,c],function(u){var a=[],i=[];t(n,function(n,r){r=u(n),a.push(r),r||i.push(n)}),r(i)<r(o)&&(o=i,e=a)}),r(u(o,function(n){return n==o[0]}))==r(o)?e:[]}function v(n){if("TABLE"==n.nodeName){for(var a=function(r){var e,o,u=[],a=[];return function n(r,e){e(r),t(r.childNodes,function(r){n(r,e)})}(n,function(n){"TR"==(o=n.nodeName)?(e=[],u.push(e),a.push(n)):"TD"!=o&&"TH"!=o||e.push(n)}),[u,a]}(),i=a[0],s=a[1],c=r(i),f=c>1&&r(i[0])<r(i[1])?1:0,v=f+1,p=i[f],h=r(p),l=[],g=[],N=[],m=v;m<c;++m){for(var T=0;T<h;++T){r(g)<h&&g.push([]);var C=i[m][T],L=C.textContent||C.innerText||"";g[T].push(L.trim())}N.push(m-v)}t(p,function(n,t){l[t]=0;var a=n.classList;a.add("tg-sort-header"),n.addEventListener("click",function(){var n=l[t];!function(){for(var n=0;n<h;++n){var r=p[n].classList;r.remove("tg-sort-asc"),r.remove("tg-sort-desc"),l[n]=0}}(),(n=1==n?-1:+!n)&&a.add(n>0?"tg-sort-asc":"tg-sort-desc"),l[t]=n;var i,f=g[t],m=function(r,t){return n*f[r].localeCompare(f[t])||n*(r-t)},T=function(n){var t=d(n);if(!r(t)){var u=o(n),a=o(n.map(e));t=d(n.map(function(n){return n.substring(u,r(n)-a)}))}return t}(f);(r(T)||r(T=r(u(i=f.map(Date.parse),isNaN))?[]:i))&&(m=function(r,t){var e=T[r],o=T[t],u=isNaN(e),a=isNaN(o);return u&&a?0:u?-n:a?n:e>o?n:e<o?-n:n*(r-t)});var C,L=N.slice();L.sort(m);for(var E=v;E<c;++E)(C=s[E].parentNode).removeChild(s[E]);for(E=v;E<c;++E)C.appendChild(s[v+L[E-v]])})})}}n.addEventListener("DOMContentLoaded",function(){for(var t=n.getElementsByClassName("tg"),e=0;e<r(t);++e)try{v(t[e])}catch(n){}})}(document)</script>
+
+    <div id="container_hist">
+        <div class="chart">
+            <canvas id="barchart" width="700" height="400"></canvas>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function getBodyText(win) {
+            var doc = win.document, body = doc.body, selection, range, bodyText;
+            if (body.createTextRange) {
+                return body.createTextRange().text;
+            } else if (win.getSelection) {
+                selection = win.getSelection();
+                range = doc.createRange();
+                range.selectNodeContents(body);
+                selection.addRange(range);
+                bodyText = selection.toString();
+                selection.removeAllRanges();
+                const regex = /\d{4}-\d{2}-(\d{2})/g;
+                const daysArray = [];
+                let match = regex.exec(bodyText);
+                while (match !== null) {
+                    daysArray.push(match[1]);
+                    match = regex.exec(bodyText);
+                }
+                return daysArray;
+            }
+        }
+
+        txt = getBodyText(window);
+        // alert(txt);
+        var arr = txt;
+        arr = arr.filter(e => e);
+        const dict = {};
+        for (let i = 0; i < arr.length; i++) {
+            const elem = arr[i];
+            if (dict[elem]) {
+                dict[elem]++;
+            } else {
+                dict[elem] = 1;
+            }
+        }
+        const sortedKeys = Object.keys(dict).sort();
+        const valuesArray = [];
+        for (let i = 0; i < sortedKeys.length; i++) {
+            const key = sortedKeys[i];
+            const value = dict[key];
+            valuesArray.push(value);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>
+    <script type="text/javascript">
+        const ctx = document.getElementById('barchart').getContext('2d');
+        const barchart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: sortedKeys,
+                datasets: [{
+                    label: 'Show the results',
+                    data: valuesArray,
+                    backgroundColor: [
+                        'rgba(25, 99, 132, 0.2)',
+                        'rgba(54, 16, 25, 0.2)',
+                        'rgba(25, 206, 86, 0.2)',
+                        'rgba(75, 12, 192, 0.2)',
+                        'rgba(15, 102, 25, 0.2)',
+                        'rgba(25, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Гистограмма частоты поставок за все дни',
+                        fullSize: true,
+                        color: 'black',
+                        font: {weight: 'bold', size: 24},
+                    },
+                    data: {
+                        color: 'chocolate'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'chocolate',
+                            transparent: '50%',
+                            display: 'flex'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <p class="text-white">
+        <script type="text/javascript">
+            function getRowsColumn() {
+                let table = document.getElementById('table_cl')
+                let tBody = table.querySelector('tbody') // как будет определяться тело нашей таблицы
+                const count = tBody.querySelectorAll('tr').length;
+                document.write('Общее число поставок: ' + count)
+            }
+        </script>
+    </p>
+    <p class="text-white">
+        <script type="text/javascript">
+            function getAverage() {
+                let table = document.getElementById('table_cl')
+                let tBody = table.querySelector('tbody') // как будет определяться тело нашей таблицы
+                const count = tBody.querySelectorAll('tr').length;
+                document.write('Число поставок за день: ' + count/sortedKeys.length)
+            }
+        </script>
+    </p>
+
+    <blockquote class="blockquote" style="margin-left: 22%; margin-top: 1%">
+        <button id="counter"><script>getRowsColumn()</script></button>
+        <button id="average" style="margin-left: 5%"><script>getAverage()</script></button>
+    </blockquote>
+    <blockquote class="blockquote text-center">
+        <a href="/new">
+            <th:block th:if="${#authorization.expression('hasRole(''ROLE_DILER'')')}">
+                <a th:href="@{/new}"><button type="button" class="btn-light btn-lg" data-toggle="button" aria-pressed="false">Добавить поставку</button></a>
+            </th:block>
+
+        </a>
+    </blockquote>
+</div>
+
+<script type="text/javascript">
+    function clearSearch() {
+        window.location="[[@{/}]]" // очищаем все символы
+    }
+</script>
+
+<script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
